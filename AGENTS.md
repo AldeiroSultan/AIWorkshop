@@ -19,6 +19,7 @@ A team dashboard for funding opportunities: grants, startup competitions, incuba
 - `static/deadlines.js` and `static/deadlines.css`: empty for now
 - `TEAM_NOTES.md`: notes from the team
 - `app/sample_data.py`: the example rows. The app copies them to `data/opportunities.json` on first run.
+- `tools/token_tracker.py`: a separate reporting tool, not part of the app. It counts the tokens each OpenCode chat used.
 
 ## Data
 
