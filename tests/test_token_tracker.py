@@ -37,8 +37,8 @@ def make_database(tmp_path):
         ("ses_test", str(tmp_path), "Test chat", 1000),
     )
 
-    def add_message(seq, kind, text, tokens=None):
-        data = {"text": text}
+    def add_message(seq, kind, text, tokens=None, cost=0):
+        data = {"text": text, "cost": cost}
         if tokens:
             data["tokens"] = tokens
         connection.execute(
@@ -52,12 +52,14 @@ def make_database(tmp_path):
         "assistant",
         "",
         {"input": 1000, "output": 200, "reasoning": 50, "cache": {"read": 500, "write": 0}},
+        cost=0.0123,
     )
     add_message(
         2,
         "assistant",
         "",
         {"input": 20, "output": 30, "reasoning": 0, "cache": {"read": 800, "write": 0}},
+        cost=0.0004,
     )
     add_message(3, "user", "Thanks")
     connection.commit()
@@ -85,10 +87,18 @@ def test_turns_add_up_the_numbers_the_provider_sent(tmp_path):
     assert token_tracker.prompt_tokens(first) == 2320
     assert token_tracker.reply_tokens(first) == 280
     assert token_tracker.total_tokens(first) == 2600
+    assert first["cost"] == pytest.approx(0.0127)
 
     # The second message has no reply yet, so it counts as zero.
     assert second["steps"] == 0
     assert token_tracker.total_tokens(second) == 0
+    assert second["cost"] == 0
+
+
+def test_cost_is_shown_in_dollars():
+    assert token_tracker.money(0) == "$0.0000"
+    assert token_tracker.money(0.0127) == "$0.0127"
+    assert token_tracker.money(1.5) == "$1.5000"
 
 
 def test_database_is_opened_read_only(tmp_path):

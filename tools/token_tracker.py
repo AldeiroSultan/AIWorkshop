@@ -7,6 +7,7 @@ writes to the database) and prints them as tables:
   Read   the tokens the AI read before it answered: your message, the earlier
          messages, the files it opened, and the instructions it follows.
   Wrote  the tokens the AI wrote back, including its hidden reasoning tokens.
+  Cost   what the provider says those tokens were worth, in US dollars.
 
 Run it from the project folder:
 
@@ -28,7 +29,7 @@ from datetime import datetime
 from pathlib import Path
 
 DATABASE_ENV_VAR = "OPENCODE_DB"
-TOKEN_KEYS = ("fresh", "cache_read", "cache_write", "output", "reasoning")
+TOKEN_KEYS = ("fresh", "cache_read", "cache_write", "output", "reasoning", "cost")
 
 
 def project_root():
@@ -151,6 +152,7 @@ def token_counts(data):
         "cache_write": cache.get("write", 0) or 0,
         "output": tokens.get("output", 0) or 0,
         "reasoning": tokens.get("reasoning", 0) or 0,
+        "cost": data.get("cost", 0) or 0,
     }
 
 
@@ -213,6 +215,11 @@ def clock(milliseconds):
     return datetime.fromtimestamp(milliseconds / 1000).strftime("%Y-%m-%d %H:%M")
 
 
+def money(amount):
+    """Four decimals, because one turn often costs less than a cent."""
+    return f"${amount:,.4f}"
+
+
 def print_table(headers, rows, text_columns):
     """Print a plain table; the first `text_columns` columns are left-aligned."""
     widths = [len(header) for header in headers]
@@ -260,19 +267,20 @@ def show_sessions(connection, tables, sessions):
                 f"{chat['output']:,}",
                 f"{chat['reasoning']:,}",
                 f"{total_tokens(chat):,}",
+                money(chat["cost"]),
             ]
         )
 
     print(f"Chats in {project_root()} (newest first)\n")
     print_table(
-        ["Chat", "Title", "Steps", "Read", "Cached", "Wrote", "Reason", "Total"],
+        ["Chat", "Title", "Steps", "Read", "Cached", "Wrote", "Reason", "Total", "Cost"],
         rows,
         2,
     )
     print()
     print(
         f"{len(rows)} chats: {prompt_tokens(totals):,} tokens read, "
-        f"{reply_tokens(totals):,} tokens written."
+        f"{reply_tokens(totals):,} tokens written, {money(totals['cost'])} in total."
     )
     print("Add --turns to see one chat message by message.")
 
@@ -302,25 +310,38 @@ def show_turns(connection, tables, session):
                 f"{turn['output']:,}",
                 f"{turn['reasoning']:,}",
                 f"{total_tokens(turn):,}",
+                money(turn["cost"]),
             ]
         )
 
     print()
     print_table(
-        ["#", "When", "You said", "Read", "Fresh", "Cached", "Wrote", "Reason", "Total"],
+        [
+            "#",
+            "When",
+            "You said",
+            "Read",
+            "Fresh",
+            "Cached",
+            "Wrote",
+            "Reason",
+            "Total",
+            "Cost",
+        ],
         rows,
         3,
     )
     print()
     print(
         f"All {len(turns)} turns: {prompt_tokens(totals):,} tokens read, "
-        f"{reply_tokens(totals):,} tokens written."
+        f"{reply_tokens(totals):,} tokens written, {money(totals['cost'])} in total."
     )
     print()
     print("Read    everything the AI read, including your message and the files it opened")
     print("Fresh   read for the first time; Cached was already stored, so it is cheaper")
     print("Wrote   the reply you received; Reason is hidden thinking inside that reply")
     print("Steps   one round of reading and writing; a turn that uses tools has several")
+    print("Cost    the provider's own price for the turn, so free models report $0.0000")
 
 
 def pick_session(sessions, wanted):
