@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Capstone Funding Tracker</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <link rel="stylesheet" href="/static/deadlines.css">
+</head>
+<body>
+  <header class="page-header">
+    <p class="brand">Capstone Funding Tracker</p>
+    <h1>Funding dashboard</h1>
+    <p class="subtitle">Track funding opportunities, application status, and next steps.</p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Opportunity</th>
+              <th>Deadline</th>
+              <th>Owner</th>
+              <th>Status</th>
+              <th>Amount</th>
+              <th>Next step</th>
+            </tr>
+          </thead>
+          <tbody id="opportunity-rows"></tbody>
+        </table>
+      </div>
+    </section>
+    <p class="footnote">Demo data. All names are fictional.</p>
+  </main>
+
+  <script src="/static/deadlines.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>

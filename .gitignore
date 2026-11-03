@@ -1,0 +1,19 @@
+# The app creates this on first run. Each person keeps their own copy.
+data/opportunities.json
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Personal settings and secrets
+.env
+.claude/settings.local.json
+
+# Editor and system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
