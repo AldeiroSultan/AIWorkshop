@@ -1,4 +1,4 @@
-from datetime import date, datetime
+from datetime import date
 
 
 def days_left(deadline: date) -> int:
@@ -6,5 +6,4 @@ def days_left(deadline: date) -> int:
 
     Negative means the deadline has passed.
     """
-    deadline_time = datetime(deadline.year, deadline.month, deadline.day)
-    return (deadline_time - datetime.now()).days
+    return (deadline - date.today()).days
