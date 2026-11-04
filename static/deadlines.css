@@ -10,3 +10,5 @@
 
 .deadline-red { background: #fdecec; color: #991b1b; }
 .deadline-yellow { background: #fef3c7; color: #92400e; }
+.deadline-fail { background: #991b1b; color: #ffffff; }
+.deadline-pass { background: #166534; color: #ffffff; }

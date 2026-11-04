@@ -7,6 +7,18 @@ function showDeadline(row, cell, opportunity) {
   let text = "";
   let colour = "";
 
+  // Pass or Fail: a deadline that has passed fails, today or later passes.
+  // (With today = 3 Nov, 2 Nov and earlier fail, 3 Nov and later pass.)
+  const result = document.createElement("div");
+  if (daysLeft < 0) {
+    result.className = "deadline-label deadline-fail";
+    result.textContent = "Fail";
+  } else {
+    result.className = "deadline-label deadline-pass";
+    result.textContent = "Pass";
+  }
+  cell.appendChild(result);
+
   if (daysLeft < 0) {
     text = "Overdue";
     colour = "red";
